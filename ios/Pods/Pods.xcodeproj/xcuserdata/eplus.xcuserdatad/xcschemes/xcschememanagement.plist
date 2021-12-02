@@ -79,12 +79,12 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BaseReactNative-BaseReactNativeTests.xcscheme</key>
+		<key>Pods-EscapePoor-EscapePoorTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BaseReactNative.xcscheme</key>
+		<key>Pods-EscapePoor.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

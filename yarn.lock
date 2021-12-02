@@ -6795,6 +6795,11 @@ react-native-skeleton-placeholder@^5.0.0:
   resolved "https://registry.yarnpkg.com/react-native-skeleton-placeholder/-/react-native-skeleton-placeholder-5.0.0.tgz#899fca447c2f0b81f98566e350e792157a3c9df9"
   integrity sha512-7sdG+Y2ENEVcxFC9XlpCgHy59XKkxaUyVqDwuAb66hvl7lwFr25uA5kHJ+JuDJ84ptVil5UEowW/2avwhsfoYg==
 
+react-native-toast-message@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.0.2.tgz#68f2396735e2f4ca9e290ca6a63d03d601a4a140"
+  integrity sha512-jjHRgK4o388WTfikoJ2D/EWtnrXKOW8YvpSBMENRG/QwK9C6SUWZ2zas/lpP634IMUbS1VuKwtQqpNXoJIAHwg==
+
 react-native-typescript-transformer@^1.2.11:
   version "1.2.13"
   resolved "https://registry.yarnpkg.com/react-native-typescript-transformer/-/react-native-typescript-transformer-1.2.13.tgz#be92a3d110dbb2cf2f4aebe60a935be124cfb7ed"
