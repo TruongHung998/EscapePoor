@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@constants/*": [
+        "./src/constants/*"
+      ],
+      "@navigators/*": [
+        "./src/navigators/*"
+      ],
+      "@context/*": [
+        "./src/context/*"
+      ],
+      "@hook/*": [
+        "./src/hook/*"
+      ],
+      "@network/*": [
+        "./src/network/*"
+      ],
+      "@utilities/*": [
+        "./src/utilities/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
+      ],
+      "@view/*": [
+        "./src/view/*"
+      ]
+    },
+    "lib": [
+      "es6"
+    ],
+    "moduleResolution": "node",
+    "noEmit": true,
+    "strict": true,
+    "target": "esnext"
+  },
+  "exclude": [
+    "node_modules",
+    ".babelrc"
+  ]
+}
