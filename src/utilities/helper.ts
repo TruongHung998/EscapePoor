@@ -117,5 +117,5 @@ export function removeNumberWithCommas(x: string | number) {
 
 export function toTimestamp(strDate: string | any) {
     var datum = Date.parse(strDate);
-    return (datum / 1000) + '';
+    return (datum / 1000);
 }

@@ -18,10 +18,11 @@ type Day = {
     buyList: Item[]
 }
 
-type Item = {
-    name: string,
-    price: string,
-    descrition: string
+export type Item = {
+    _data: {
+        money: number,
+        descrition: string
+    }
 }
 
 export interface Statistical {

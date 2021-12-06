@@ -1,22 +1,34 @@
-import React, {memo, useCallback, useState} from "react";
-import {Alert, SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
+import React, {memo, useCallback, useEffect, useState} from "react";
+import {Alert, RefreshControl, SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
 import TextInputCustomComponent from "@view/text/textInputComponent";
 import _const from "@constants/common";
 import {COLOR_GREEN, COLOR_PAPER} from "@constants/color";
 import TextCustomComponent from "@view/text/textComponent";
 import TouchOpacityButton from "@view/widget/TouchOpacityButton";
 import {LAYOUT} from "@constants/globalStyles";
-import {toTimestamp} from "@utilities/helper";
-import {insertDate} from "@shared/redux/actions/dateAction";
+import {numberWithCommas, removeNumberWithCommas, toTimestamp} from "@utilities/helper";
+import {insertDate, onDeleteDate, requestDateNowInfo, sumDate} from "@shared/redux/actions/dateAction";
 import {useSetLoading} from "@context/appContext";
 
 const HomePage3 = memo(() => {
     const [form, setForm] = useState({
-        amount: '',
+        amount: 0,
         description: ''
     })
+    const [refresh, setRefresh] = useState(false)
+    const [data, setData] = useState([])
     const setLoading = useSetLoading()
     const dateNow = new Date
+
+    useEffect(() => {
+        setLoading(true)
+        requestDateNowInfo((data) => {
+            setLoading(false)
+            setData(data)
+        }, () => {
+            setLoading(false)
+        })
+    }, [])
 
     const _onSubmit = useCallback(() => {
         setLoading(true)
@@ -26,21 +38,26 @@ const HomePage3 = memo(() => {
             description: form.description
         }, () => {
             setForm({
-                amount: '',
+                amount: 0,
                 description: ''
             })
-            setLoading(false)
+            requestDateNowInfo((data) => {
+                setData(data)
+                setLoading(false)
+            }, () => {
+                setLoading(false)
+            })
         }, () => {
             setLoading(false)
         })
-    }, [])
+    }, [form])
 
     const _onChangeForm = useCallback((value, slug) => {
         switch (slug) {
             case 'amount':
                 setForm({
                     ...form,
-                    amount: value
+                    amount: parseInt(removeNumberWithCommas(value))
                 })
                 break;
             case 'description':
@@ -50,8 +67,21 @@ const HomePage3 = memo(() => {
                 })
                 break;
         }
-    }, [])
+    }, [form])
 
+    const _onDelete = useCallback(() => {
+        setLoading(true)
+        onDeleteDate(() => {
+            requestDateNowInfo((data) => {
+                setData(data)
+                setLoading(false)
+            }, () => {
+                setLoading(false)
+            })
+        }, () => {
+            setLoading(false)
+        })
+    }, [])
 
     return <SafeAreaView style={styles.container}>
         <View style={{height: _const.HEIGHT_SCREEN * 0.3}}>
@@ -61,7 +91,7 @@ const HomePage3 = memo(() => {
                     <TextInputCustomComponent keyboardType="numeric"
                                               style={styles.text_input} onChangeText={(value: any) => {
                         _onChangeForm(value, 'amount')
-                    }} value={form.amount}/>
+                    }} value={numberWithCommas(form.amount)}/>
                 </View>
                 <View style={{paddingLeft: 15}}>
                     <TextCustomComponent textType={"bold"}>{'Mô tả chi tiêu'}</TextCustomComponent>
@@ -71,9 +101,9 @@ const HomePage3 = memo(() => {
                     }} value={form.description}/>
                 </View>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10}}>
-                    <TouchOpacityButton style={styles.button2} onPress={_onSubmit}>
+                    <TouchOpacityButton style={styles.button2} onPress={_onDelete}>
                         <TextCustomComponent color={'white'}
-                                             textType={"bold"}>{'Clear Dư liệu Ngày'}</TextCustomComponent>
+                                             textType={"bold"}>{'Xoá dữ liệu gần nhất'}</TextCustomComponent>
                     </TouchOpacityButton>
                     <TouchOpacityButton style={styles.button} onPress={_onSubmit}>
                         <TextCustomComponent color={'white'} textType={"bold"}>{'Lưu'}</TextCustomComponent>
@@ -81,11 +111,17 @@ const HomePage3 = memo(() => {
                 </View>
             </ScrollView>
         </View>
-        <ScrollView>
-            <TextCustomComponent>
+        <ScrollView refreshControl={
+            <RefreshControl
+                refreshing={refresh}
+                onRefresh={() => {
+                }}
+            />
+        }>
+            <TextCustomComponent style={{paddingLeft: 15}}>
                 <TextCustomComponent>{`Số tiền đã tiêu trong ngày `}</TextCustomComponent>
                 <TextCustomComponent textType={'bold'}
-                                     fontSize={20}>{`20000`}</TextCustomComponent>
+                                     fontSize={20}>{sumDate(data) + ''}</TextCustomComponent>
                 <TextCustomComponent>{` vnd`}</TextCustomComponent>
             </TextCustomComponent>
         </ScrollView>
