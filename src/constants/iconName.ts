@@ -7,4 +7,12 @@ export const ICON_NAME = {
         isImage: true,
         icon_name: require("../assets/images/icon/option.png")
     },
+    MONEY: {
+        isImage: true,
+        icon_name: require("../assets/images/icon/loading.png")
+    },
+    SCHEDULE: {
+        isImage: true,
+        icon_name: require("../assets/images/icon/schedule2.png")
+    },
 }

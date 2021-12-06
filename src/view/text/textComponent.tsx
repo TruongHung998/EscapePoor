@@ -53,15 +53,12 @@ const TextCustomComponent = memo(({
 })
 
 const styles = {
-    regular: {
-    },
+    regular: {},
     bold: {
+        fontWeight: 'bold',
     },
-    light: {
-    },
-    extra_light: {
-    },
-    italic: {
-    }
+    light: {},
+    extra_light: {},
+    italic: {}
 }
 export default TextCustomComponent

@@ -54,8 +54,8 @@ const BottomTabBar = memo(({state, descriptors, navigation}: BottomTabBarProps):
                     options.tabBarLabel !== undefined
                         ? options.tabBarLabel
                         : options.title !== undefined
-                        ? options.title
-                        : route.name;
+                            ? options.title
+                            : route.name;
                 const iconName = options?.iconName
                 const activeColor = options?.activeColor
                 const isFocused = state.index === index;
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     label_style: {
         ...FONT.normal,
         textTransform: 'none',
-        fontSize: PixelRatio.get() <= 2 ? 12 : 10,
+        fontSize: PixelRatio.get() <= 2 ? 10 : 8,
     },
     image_background: {
         width: _const.WIDTH_SCREEN,

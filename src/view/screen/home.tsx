@@ -1,17 +1,23 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {SafeAreaView, StyleSheet, Text, View} from "react-native";
-import {insertTarget, requestUserInfo} from "@shared/redux/actions/userAction";
+import {SafeAreaView, StyleSheet, View} from "react-native";
+import {insertField, requestUserInfo} from "@shared/redux/actions/userAction";
 import TouchOpacityButton from '@view/widget/TouchOpacityButton'
 import _const from "@constants/common";
 import TextCustomComponent from "@view/text/textComponent";
 import TextInputCustomComponent from "@view/text/textInputComponent";
 import {COLOR_PAPER} from "@constants/color";
 import {numberWithCommas, removeNumberWithCommas} from "@utilities/helper";
+import {useSetLoading} from "@context/appContext";
+import {User} from "@shared/redux/constants/modalTypes";
 
 
 const HomePage = memo(() => {
-    const [data, setData] = useState({})
+    const [data, setData] = useState<User | any>({})
     const [moneyAmount, setMoneyAmount] = useState('')
+    const setLoading = useSetLoading()
+    const name = data?.name || ""
+    const total = data?.total || ""
+    const target = data?.target || ""
 
     useEffect(() => {
         requestUserInfo((data) => {
@@ -21,17 +27,39 @@ const HomePage = memo(() => {
     }, [])
 
     const _onUpdateAmount = useCallback(() => {
-        insertTarget({
-            total: moneyAmount
+        setLoading(true)
+        insertField({
+            target: moneyAmount
         }, () => {
+            requestUserInfo((data) => {
+                setData(data)
+                setLoading(false)
+            }, () => {
+                setLoading(false)
+            })
         }, () => {
+            setLoading(false)
         })
     }, [moneyAmount])
 
     return <SafeAreaView style={styles.container}>
         <View style={{padding: 30}}>
-            <Text>{JSON.stringify(data)}</Text>
-            <Text>{numberWithCommas(moneyAmount)}</Text>
+            <TextCustomComponent>
+                <TextCustomComponent>{`Tên `}</TextCustomComponent>
+                <TextCustomComponent textType={'bold'}
+                                     fontSize={20}>{`${numberWithCommas(name)}`}</TextCustomComponent>
+            </TextCustomComponent>
+            <TextCustomComponent>
+                <TextCustomComponent>{`Mục tiêu `}</TextCustomComponent>
+                <TextCustomComponent textType={'bold'}
+                                     fontSize={20}>{`${numberWithCommas(target)}`}</TextCustomComponent>
+            </TextCustomComponent>
+            <TextCustomComponent>
+                <TextCustomComponent>{`Số dư `}</TextCustomComponent>
+                <TextCustomComponent textType={'bold'}
+                                     fontSize={20}>{`${numberWithCommas(total)}`}</TextCustomComponent>
+                <TextCustomComponent>{` vnđ`}</TextCustomComponent>
+            </TextCustomComponent>
             <TextInputCustomComponent keyboardType="numeric"
                                       style={stylesUser.text_input} onChangeText={(value: any) => {
                 setMoneyAmount(removeNumberWithCommas(value))

@@ -1,5 +1,7 @@
 import React, {memo, useEffect, useMemo, useState} from 'react'
 import {Animated, Easing, StyleSheet, View} from 'react-native'
+import _const from "@constants/common";
+import {COLOR_PINK} from "@constants/color";
 
 const ICON_LOADING = require('../assets/images/icon/loading.png')
 
@@ -34,7 +36,7 @@ const LoadingView = memo(({
     }, []);
 
     useEffect(() => {
-        if (isLoading === false) {
+        if (!isLoading) {
             Animated.timing(
                 opacity, {
                     toValue: 0,
@@ -61,8 +63,8 @@ const LoadingView = memo(({
                     {
                         width: sizeOverLoading,
                         height: sizeOverLoading,
-                        // tintColor: 'red'
-                    }
+                    },
+                    styles.icon
                 ]}
                 resizeMode={"contain"}
             />
@@ -70,6 +72,13 @@ const LoadingView = memo(({
     )
 })
 const styles = StyleSheet.create({
+    icon: {
+        tintColor: 'white',
+        backgroundColor: COLOR_PINK,
+        borderRadius: _const.WIDTH_SCREEN / 2,
+        width: _const.WIDTH_SCREEN * 0.1,
+        height: _const.WIDTH_SCREEN * 0.1,
+    },
     container: {
         position: 'absolute',
         left: 0,
@@ -77,7 +86,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         top: 0,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     }
 })
 
