@@ -1,7 +1,8 @@
 import firestore from "@react-native-firebase/firestore";
 import config from "../../../config";
-import {Item, User} from "@shared/redux/constants/modalTypes";
+import {Item} from "@shared/redux/constants/modalTypes";
 import {numberWithCommas, toTimestamp} from "@utilities/helper";
+import moment from "moment";
 
 var start = new Date();
 start.setUTCHours(0, 0, 0, 0);
@@ -13,10 +14,10 @@ export const insertDate = async (data: any, resolve: (data: any) => void, reject
         const formInput = {
             ...data
         }
-        console.log(formInput)
         firestore().collection(`DateInfo/${config.ENV}/data`).add(formInput)
-            .then((data) => {
-                resolve && resolve(data)
+            .then(async (data) => {
+                await onAddDate()
+                resolve && resolve('')
             }).catch((error) => {
             reject && reject('error')
         })
@@ -33,7 +34,21 @@ export const requestDateNowInfo = (resolve: (data: any) => void, reject: (error:
             .where('time', '<=', toTimestamp(end))
             .get().then((result: any) => {
             const _data = result
-            console.log(_data)
+            if (_data && _data.docs) {
+                resolve && resolve(_data.docs)
+            } else reject && reject('error')
+        })
+    } catch (e) {
+        console.log(e, 'error')
+        reject && reject(e)
+    }
+}
+
+export const requestCalendar = (resolve: (data: any) => void, reject: (error: any) => void) => {
+    try {
+        firestore().collection(`DateInfo/${config.ENV}/dataDay`)
+            .get().then((result: any) => {
+            const _data = result
             if (_data && _data.docs) {
                 resolve && resolve(_data.docs)
             } else reject && reject('error')
@@ -59,6 +74,69 @@ export const sumDate = (array: Item[]) => {
     } else return 0
 }
 
+const sumRequest = async () => {
+    const result = await firestore().collection(`DateInfo/${config.ENV}/data`)
+        .where('time', '>=', toTimestamp(start))
+        .where('time', '<=', toTimestamp(end))
+        .get().then((result: any) => {
+            const _data = result
+            if (_data && _data.docs) {
+                const sum = sumDate(_data.docs)
+                return sum
+            } else return 0
+        })
+    return result
+}
+
+const addExistDay = async (docId: any, sum: any) => {
+    await firestore().collection(`DateInfo/${config.ENV}/dataDay`).doc(docId).update({
+        date: moment(new Date()).format('MM/DD/YYYY'),
+        money: sum,
+        time: toTimestamp(new Date())
+    }).then((e) => {
+    }).catch((e) => {
+    })
+}
+
+export const deleteDay = async () => {
+    await firestore().collection(`DateInfo/${config.ENV}/data`).onSnapshot((snap) => {
+        snap.docs.forEach(async doc => {
+            await firestore().collection(`DateInfo/${config.ENV}/data`).doc(doc.id).delete().then(async () => {
+            })
+                .catch((e) => {
+                    console.log(e)
+                })
+        })
+    })
+}
+
+
+const addDay = async (sum: any) => {
+    await deleteDay()
+    await firestore().collection(`DateInfo/${config.ENV}/dataDay`).add({
+        date: moment(new Date()).format('MM/DD/YYYY'),
+        money: sum,
+        time: toTimestamp(new Date())
+    }).then((e) => {
+        console.log(e)
+    }).catch((e) => {
+        console.log(e)
+    })
+}
+
+const onAddDate = async () => {
+    const sum = await sumRequest()
+    firestore().collection(`DateInfo/${config.ENV}/dataDay`)
+        .where('date', '==', moment(new Date()).format('MM/DD/YYYY'))
+        .get().then(async (result) => {
+        if (!result.empty) {
+            await addExistDay(result.docs[0].id, sum)
+        } else {
+            await addDay(sum)
+        }
+    })
+}
+
 export const onDeleteDate = async (resolve: (data: any) => void, reject: (error: any) => void) => {
     try {
         const docId = await firestore().collection(`DateInfo/${config.ENV}/data`)
@@ -66,7 +144,8 @@ export const onDeleteDate = async (resolve: (data: any) => void, reject: (error:
             .limit(1).get()
         if (docId) {
             const id = docId.docs[0].id
-            await firestore().collection(`DateInfo/${config.ENV}/data`).doc(id).delete().then(() => {
+            await firestore().collection(`DateInfo/${config.ENV}/data`).doc(id).delete().then(async () => {
+                await onAddDate()
                 resolve && resolve('')
             })
                 .catch((e) => {

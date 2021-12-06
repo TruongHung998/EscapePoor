@@ -16,7 +16,7 @@ import TextCustomComponent from "@view/text/textComponent";
 import TouchOpacityButton from "@view/widget/TouchOpacityButton";
 import {LAYOUT} from "@constants/globalStyles";
 import {hexAToRGBA, numberWithCommas, removeNumberWithCommas, toTimestamp} from "@utilities/helper";
-import {insertDate, onDeleteDate, requestDateNowInfo, sumDate} from "@shared/redux/actions/dateAction";
+import {deleteDay, insertDate, onDeleteDate, requestDateNowInfo, sumDate} from "@shared/redux/actions/dateAction";
 import {useSetLoading} from "@context/appContext";
 import {Item} from "@shared/redux/constants/modalTypes";
 
@@ -116,7 +116,6 @@ const HomePage3 = memo(() => {
         const money = data?._data?.money || ""
         const description = data?._data?.description || "Không có mô tả"
         const type = data?._data?.type || false
-        console.log(data?._data)
         return <View style={{flexDirection: 'row'}}>
             <View style={type ? styles.box1 : styles.box2}>
                 <TextCustomComponent
@@ -140,8 +139,8 @@ const HomePage3 = memo(() => {
                 </View>
                 <View style={{paddingLeft: 15}}>
                     <TextCustomComponent textType={"bold"}>{'Mô tả chi tiêu'}</TextCustomComponent>
-                    <TextInputCustomComponent keyboardType="numeric"
-                                              style={styles.text_input} onChangeText={(value: any) => {
+                    <TextInputCustomComponent
+                        style={styles.text_input} onChangeText={(value: any) => {
                         _onChangeForm(value, 'description')
                     }} value={form.description}/>
                 </View>
@@ -151,10 +150,10 @@ const HomePage3 = memo(() => {
                                              textType={"bold"}>{'Xoá dữ liệu gần nhất'}</TextCustomComponent>
                     </TouchOpacityButton>
                     <TouchOpacityButton style={styles.button3} onPress={_onSubmit} data={false}>
-                        <TextCustomComponent color={'white'} textType={"bold"}>{'Out'}</TextCustomComponent>
+                        <TextCustomComponent color={'white'} textType={"bold"}>{'Chi'}</TextCustomComponent>
                     </TouchOpacityButton>
                     <TouchOpacityButton style={styles.button} onPress={_onSubmit} data={true}>
-                        <TextCustomComponent color={'white'} textType={"bold"}>{'In'}</TextCustomComponent>
+                        <TextCustomComponent color={'white'} textType={"bold"}>{'Thu'}</TextCustomComponent>
                     </TouchOpacityButton>
                 </View>
             </ScrollView>

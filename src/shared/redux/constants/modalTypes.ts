@@ -26,6 +26,13 @@ export type Item = {
     }
 }
 
+export type ItemDay = {
+    _data: {
+        date: string,
+        money: string
+    }
+}
+
 export interface Statistical {
     totalMonth: Month[],
     totalDayNow: Day
