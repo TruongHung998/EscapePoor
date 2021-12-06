@@ -114,3 +114,8 @@ export function numberWithCommas(x: string | number) {
 export function removeNumberWithCommas(x: string | number) {
     return x.toString().replace(/\./g, "")
 }
+
+export function toTimestamp(strDate: string | any) {
+    var datum = Date.parse(strDate);
+    return (datum / 1000) + '';
+}
