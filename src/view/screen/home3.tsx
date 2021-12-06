@@ -1,22 +1,13 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {
-    Alert,
-    FlatList,
-    LayoutAnimation,
-    RefreshControl,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    View
-} from "react-native";
+import {FlatList, LayoutAnimation, RefreshControl, SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
 import TextInputCustomComponent from "@view/text/textInputComponent";
 import _const from "@constants/common";
-import {COLOR_GREEN, COLOR_ORANGE, COLOR_PAPER, COLOR_PINK, COLOR_RED} from "@constants/color";
+import {COLOR_GREEN, COLOR_PAPER, COLOR_RED} from "@constants/color";
 import TextCustomComponent from "@view/text/textComponent";
 import TouchOpacityButton from "@view/widget/TouchOpacityButton";
 import {LAYOUT} from "@constants/globalStyles";
 import {hexAToRGBA, numberWithCommas, removeNumberWithCommas, toTimestamp} from "@utilities/helper";
-import {deleteDay, insertDate, onDeleteDate, requestDateNowInfo, sumDate} from "@shared/redux/actions/dateAction";
+import {insertDate, onDeleteDate, requestDateNowInfo, sumDate} from "@shared/redux/actions/dateAction";
 import {useSetLoading} from "@context/appContext";
 import {Item} from "@shared/redux/constants/modalTypes";
 
