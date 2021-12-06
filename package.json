@@ -26,6 +26,8 @@
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/viewpager": "^5.0.11",
+    "@react-native-firebase/app": "^13.1.0",
+    "@react-native-firebase/firestore": "^13.1.0",
     "@react-native-masked-view/masked-view": "^0.2.6",
     "@react-navigation/bottom-tabs": "^5.11.11",
     "@react-navigation/drawer": "^5.12.5",

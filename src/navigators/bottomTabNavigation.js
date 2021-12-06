@@ -12,7 +12,7 @@ import {SCREENS} from "../constants/screen";
 const BottomTabNavigation = memo(() => {
     return (
         <TabNavigator.Navigator
-            tabBar={RoundTopCornerTabBar}
+            // tabBar={RoundTopCornerTabBar}
         >
             <StackNavigator.Screen
                 name={NAVIGATION_TAB_HOME}

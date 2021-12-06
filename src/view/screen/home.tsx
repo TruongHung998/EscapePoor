@@ -1,58 +1,65 @@
-import React, {memo, useCallback} from "react";
-import {LayoutAnimation, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import BaseHeaderHome from "../elements/header/baseHeader";
-import TextInputAwareKeyboard from "../widget/TextInputAwareKeyboard";
-import _const from "../../constants/common"
-import LazyFastImage from "../widget/lazy_fast_image/lazy_fast_image";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder/lib/SkeletonPlaceholder";
-import {COLOR_ORANGE, COLOR_RED} from "../../constants/color";
-import {hexAToRGBA} from "../../utilities/helper";
-import {LAYOUT} from "../../constants/globalStyles";
-import LinearGradient from 'react-native-linear-gradient';
-import TouchOpacityButton from "../widget/TouchOpacityButton";
-import LoadingPlaceholder from "../widget/loadingPlaceholder";
-import {useSetLoading, useShowAlert, useShowModal} from "../../context/appContext";
+import React, {memo, useCallback, useEffect, useState} from "react";
+import {SafeAreaView, StyleSheet, Text, View} from "react-native";
+import {insertTarget, requestUserInfo} from "@shared/redux/actions/userAction";
+import TouchOpacityButton from '@view/widget/TouchOpacityButton'
+import _const from "@constants/common";
+import TextCustomComponent from "@view/text/textComponent";
+import TextInputCustomComponent from "@view/text/textInputComponent";
+import {COLOR_PAPER} from "@constants/color";
+import {numberWithCommas, removeNumberWithCommas} from "@utilities/helper";
+
 
 const HomePage = memo(() => {
-    const showModal = useShowModal()
-    const useAlert = useShowAlert()
-    const setLoading = useSetLoading()
-    const _onPressModal = useCallback(() => {
-        LayoutAnimation.easeInEaseOut()
-        showModal({
-            childrenView: <View style={{flex: 1, backgroundColor: 'white'}}><Text
-                style={{fontSize: 30, textAlign: 'center'}}>ModalBox</Text></View>,
-            viewHeight: _const.HEIGHT_SCREEN * 0.7,
-            isShowHeader: false
+    const [data, setData] = useState({})
+    const [moneyAmount, setMoneyAmount] = useState('')
+
+    useEffect(() => {
+        requestUserInfo((data) => {
+            setData(data)
+        }, () => {
         })
     }, [])
 
-    const _onPressAlert = useCallback(() => {
-        const _dismiss = useAlert({
-            visible: true,
-            animationType: 'fade',
-            contentTitle: 'SUCCESS',
-            message: 'Alert Success',
-            buttons: [{
-                label: 'Back',
-                active: true,
-                onPress: () => {
-                    _dismiss()
-                }
-            }],
+    const _onUpdateAmount = useCallback(() => {
+        insertTarget({
+            total: moneyAmount
+        }, () => {
+        }, () => {
         })
-    }, [])
-
-    const _onLoading = useCallback(() => {
-        setLoading(true)
-        setTimeout(() => {
-            setLoading(false)
-        }, 2000)
-    }, [])
+    }, [moneyAmount])
 
     return <SafeAreaView style={styles.container}>
-        
+        <View style={{padding: 30}}>
+            <Text>{JSON.stringify(data)}</Text>
+            <Text>{numberWithCommas(moneyAmount)}</Text>
+            <TextInputCustomComponent keyboardType="numeric"
+                                      style={stylesUser.text_input} onChangeText={(value: any) => {
+                setMoneyAmount(removeNumberWithCommas(value))
+            }} value={numberWithCommas(moneyAmount)}/>
+            <TouchOpacityButton style={stylesUser.button} onPress={_onUpdateAmount}>
+                <TextCustomComponent color={'white'}>ss</TextCustomComponent>
+            </TouchOpacityButton>
+        </View>
     </SafeAreaView>
+})
+
+const stylesUser = StyleSheet.create({
+    text_input: {
+        width: _const.WIDTH_SCREEN * 0.3,
+        height: _const.HEIGHT_SCREEN * 0.05,
+        borderWidth: 2,
+        borderColor: COLOR_PAPER,
+        marginVertical: 15,
+        borderRadius: 5
+    },
+    button: {
+        width: _const.WIDTH_SCREEN * 0.3,
+        height: _const.HEIGHT_SCREEN * 0.05,
+        backgroundColor: '#0957DE',
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 })
 
 const styles = StyleSheet.create({

@@ -107,3 +107,10 @@ export function validateEmail(email: any) {
     return re.test(String(email).toLowerCase());
 }
 
+export function numberWithCommas(x: string | number) {
+    return x.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+}
+
+export function removeNumberWithCommas(x: string | number) {
+    return x.toString().replace(/\./g, "")
+}
