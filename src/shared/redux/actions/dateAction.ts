@@ -13,6 +13,7 @@ export const insertDate = async (data: any, resolve: (data: any) => void, reject
         const formInput = {
             ...data
         }
+        console.log(formInput)
         firestore().collection(`DateInfo/${config.ENV}/data`).add(formInput)
             .then((data) => {
                 resolve && resolve(data)
@@ -47,10 +48,11 @@ export const sumDate = (array: Item[]) => {
     if (array.length > 0) {
         let i = 0
         array.map((item: Item) => {
-            console.log(item._data)
             const data = item._data
             if (data && data?.money && Number.isInteger(data.money)) {
-                i = i + data.money
+                if (data.type)
+                    i = i + data.money
+                else i = i - data.money
             }
         })
         return numberWithCommas(i)
@@ -64,7 +66,6 @@ export const onDeleteDate = async (resolve: (data: any) => void, reject: (error:
             .limit(1).get()
         if (docId) {
             const id = docId.docs[0].id
-            console.log(id)
             await firestore().collection(`DateInfo/${config.ENV}/data`).doc(id).delete().then(() => {
                 resolve && resolve('')
             })

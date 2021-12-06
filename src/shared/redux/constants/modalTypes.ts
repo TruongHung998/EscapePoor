@@ -21,7 +21,8 @@ type Day = {
 export type Item = {
     _data: {
         money: number,
-        descrition: string
+        description: string,
+        type: boolean
     }
 }
 
