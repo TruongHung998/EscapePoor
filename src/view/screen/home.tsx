@@ -1,15 +1,16 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {Image, SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
+import {Image, LayoutAnimation, RefreshControl, ScrollView, StyleSheet, View} from "react-native";
 import {insertField, requestUserInfo} from "@shared/redux/actions/userAction";
-import TouchOpacityButton from '@view/widget/TouchOpacityButton'
 import _const from "@constants/common";
 import TextCustomComponent from "@view/text/textComponent";
-import TextInputCustomComponent from "@view/text/textInputComponent";
 import {COLOR_PAPER, COLOR_PINK} from "@constants/color";
-import {numberWithCommas, removeNumberWithCommas} from "@utilities/helper";
+import {numberWithCommas} from "@utilities/helper";
 import {useSetLoading} from "@context/appContext";
 import {User} from "@shared/redux/constants/modalTypes";
 import {LAYOUT} from "@constants/globalStyles";
+import {Widget1} from "@view/screen/widgetHome/widget1";
+import {Widget2} from "@view/screen/widgetHome/widget2";
+import {requestDateNowInfo} from "@shared/redux/actions/dateAction";
 
 
 const HomePage = memo(() => {
@@ -17,13 +18,41 @@ const HomePage = memo(() => {
     const [moneyAmount, setMoneyAmount] = useState('')
     const setLoading = useSetLoading()
     const name = data?.name || ""
-    const total = data?.total || ""
-    const target = data?.target || ""
+    const [refresh, setRefresh] = useState(false)
+    const [dataDay, setDataDay] = useState([])
 
     useEffect(() => {
         requestUserInfo((data) => {
+            LayoutAnimation.easeInEaseOut()
             setData(data)
         }, () => {
+        })
+        setLoading(true)
+        requestDateNowInfo((data) => {
+            LayoutAnimation.easeInEaseOut()
+            setLoading(false)
+            setDataDay(data)
+        }, () => {
+            setLoading(false)
+        })
+    }, [])
+
+    const _onRefresh = useCallback(() => {
+        setRefresh(true)
+        requestUserInfo((data) => {
+            LayoutAnimation.easeInEaseOut()
+            setRefresh(false)
+            setData(data)
+        }, () => {
+            setRefresh(false)
+        })
+        setRefresh(true)
+        requestDateNowInfo((data) => {
+            LayoutAnimation.easeInEaseOut()
+            setRefresh(false)
+            setDataDay(data)
+        }, () => {
+            setRefresh(false)
         })
     }, [])
 
@@ -46,58 +75,42 @@ const HomePage = memo(() => {
     return <View style={styles.container}>
         <View
             style={{height: _const.HEIGHT_SCREEN * 0.9}}>
-            <ScrollView>
-                <View style={styles.container2}>
+            <ScrollView refreshControl={
+                <RefreshControl
+                    refreshing={refresh}
+                    onRefresh={_onRefresh}
+                />
+            }>
+                <View>
+                    <View style={styles.container2}/>
                     <View style={styles.container3}>
                         <Image source={require("../../assets/lanhuyen.jpg")} style={styles.image}/>
                     </View>
-                </View>
-                <View style={{marginTop: _const.HEIGHT_SCREEN * 0.12}}>
-                    <TextCustomComponent textType={'bold'} style={{textAlign: 'center'}}
-                                         fontSize={20}>{`${numberWithCommas(name)}`}</TextCustomComponent>
-                    <TextCustomComponent>
-                        <TextCustomComponent>{`Mục tiêu `}</TextCustomComponent>
-                        <TextCustomComponent textType={'bold'}
-                                             fontSize={20}>{`${numberWithCommas(target)}`}</TextCustomComponent>
-                    </TextCustomComponent>
-                    <TextCustomComponent>
-                        <TextCustomComponent>{`Số dư `}</TextCustomComponent>
-                        <TextCustomComponent textType={'bold'}
-                                             fontSize={20}>{`${numberWithCommas(total)}`}</TextCustomComponent>
-                        <TextCustomComponent>{` vnđ`}</TextCustomComponent>
-                    </TextCustomComponent>
-                    {/*<TextInputCustomComponent keyboardType="numeric"*/}
-                    {/*                          style={stylesUser.text_input} onChangeText={(value: any) => {*/}
-                    {/*    setMoneyAmount(removeNumberWithCommas(value))*/}
-                    {/*}} value={numberWithCommas(moneyAmount)}/>*/}
-                    {/*<TouchOpacityButton style={stylesUser.button} onPress={_onUpdateAmount}>*/}
-                    {/*    <TextCustomComponent color={'white'}>ss</TextCustomComponent>*/}
-                    {/*</TouchOpacityButton>*/}
+                    <View style={styles.view1}>
+                        <View style={{marginTop: _const.HEIGHT_SCREEN * 0.12}}>
+                            <TextCustomComponent textType={'bold'} style={{textAlign: 'center'}}
+                                                 fontSize={20}>{`${numberWithCommas(name)}`}</TextCustomComponent>
+                        </View>
+                        <Widget2 data={dataDay}/>
+                        <Widget1 data={data}/>
+                        <View style={{paddingBottom: _const.HEIGHT_SCREEN * 0.5}}/>
+                    </View>
                 </View>
             </ScrollView>
         </View>
     </View>
 })
-const stylesUser = StyleSheet.create({
-    text_input: {
-        width: _const.WIDTH_SCREEN * 0.3,
-        height: _const.HEIGHT_SCREEN * 0.05,
-        borderWidth: 2,
-        borderColor: COLOR_PAPER,
-        marginVertical: 15,
-        borderRadius: 5
-    },
-    button: {
-        width: _const.WIDTH_SCREEN * 0.3,
-        height: _const.HEIGHT_SCREEN * 0.05,
-        backgroundColor: '#0957DE',
-        borderRadius: 5,
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
-})
 
 const styles = StyleSheet.create({
+    view1: {
+        width: _const.WIDTH_SCREEN * 0.95,
+        backgroundColor: 'white',
+        alignSelf: 'center',
+        ...LAYOUT.box_shadow,
+        marginTop: _const.HEIGHT_SCREEN * 0.25,
+        borderRadius: 30,
+        paddingBottom: _const.HEIGHT_SCREEN * 0.1
+    },
     image: {
         width: _const.WIDTH_SCREEN * 0.48,
         height: _const.WIDTH_SCREEN * 0.48,
@@ -112,14 +125,21 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         ...LAYOUT.box_shadow_light,
         position: 'absolute',
-        bottom: "-35%",
-        left: "25%"
+        top: _const.HEIGHT_SCREEN * 0.12,
+        left: "25%",
+        zIndex: 100,
+        elevation: 100
     },
     container2: {
+        position: 'absolute',
+        top: 0,
+        left: 'auto',
         width: _const.WIDTH_SCREEN,
-        height: _const.HEIGHT_SCREEN * 0.3, backgroundColor: COLOR_PINK,
+        height: _const.HEIGHT_SCREEN * 0.4, backgroundColor: COLOR_PINK,
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30
     },
-    container: {backgroundColor: 'white'},
+    container: {backgroundColor: COLOR_PAPER},
     linear: {
         backgroundColor: "transparent",
         position: "absolute",

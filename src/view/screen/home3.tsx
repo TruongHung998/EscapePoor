@@ -2,12 +2,12 @@ import React, {memo, useCallback, useEffect, useState} from "react";
 import {FlatList, LayoutAnimation, RefreshControl, SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
 import TextInputCustomComponent from "@view/text/textInputComponent";
 import _const from "@constants/common";
-import {COLOR_GREEN, COLOR_PAPER, COLOR_RED} from "@constants/color";
+import {COLOR_GREEN, COLOR_PAPER, COLOR_PINK, COLOR_RED} from "@constants/color";
 import TextCustomComponent from "@view/text/textComponent";
 import TouchOpacityButton from "@view/widget/TouchOpacityButton";
 import {LAYOUT} from "@constants/globalStyles";
 import {hexAToRGBA, numberWithCommas, removeNumberWithCommas, toTimestamp} from "@utilities/helper";
-import {insertDate, onDeleteDate, requestDateNowInfo, sumDate} from "@shared/redux/actions/dateAction";
+import {accessTotal, insertDate, onDeleteDate, requestDateNowInfo, sumDate} from "@shared/redux/actions/dateAction";
 import {useSetLoading} from "@context/appContext";
 import {Item} from "@shared/redux/constants/modalTypes";
 
@@ -16,6 +16,7 @@ const HomePage3 = memo(() => {
         amount: 0,
         description: ''
     })
+
     const [refresh, setRefresh] = useState(false)
     const [data, setData] = useState([])
     const setLoading = useSetLoading()
@@ -113,80 +114,103 @@ const HomePage3 = memo(() => {
                     textType={"bold"}>{`${type ? '+ ' : '- '}${numberWithCommas(money) || 0}`}</TextCustomComponent>
             </View>
             <View style={type ? styles.box1 : styles.box2}>
-                <TextCustomComponent>{description}</TextCustomComponent>
+                <TextCustomComponent numberOfLines={2}>{description}</TextCustomComponent>
             </View>
         </View>
     }, [])
 
-    return <SafeAreaView style={styles.container}>
-        <View style={{height: _const.HEIGHT_SCREEN * 0.3}}>
-            <ScrollView>
-                <View style={{paddingLeft: 15}}>
-                    <TextCustomComponent textType={"bold"}>{'Nhập số Tiền'}</TextCustomComponent>
-                    <TextInputCustomComponent keyboardType="numeric"
-                                              style={styles.text_input} onChangeText={(value: any) => {
-                        _onChangeForm(value, 'amount')
-                    }} value={numberWithCommas(form.amount)}/>
+    return <View style={styles.container}>
+        <View>
+            <View style={styles.container2}/>
+            <View style={{
+                width: _const.WIDTH_SCREEN * 0.95,
+                alignSelf: 'center',
+                marginTop: _const.HEIGHT_SCREEN * 0.08,
+                paddingTop: _const.HEIGHT_SCREEN * 0.05,
+                backgroundColor: 'white',
+                ...LAYOUT.box_shadow,
+                borderTopLeftRadius: 15,
+                borderTopRightRadius: 15
+            }}>
+                <View style={{height: _const.HEIGHT_SCREEN * 0.3}}>
+                    <ScrollView>
+                        <View style={{paddingLeft: 15}}>
+                            <TextCustomComponent textType={"bold"}>{'Nhập số Tiền'}</TextCustomComponent>
+                            <TextInputCustomComponent keyboardType="numeric"
+                                                      style={styles.text_input} onChangeText={(value: any) => {
+                                _onChangeForm(value, 'amount')
+                            }} value={numberWithCommas(form.amount)}/>
+                        </View>
+                        <View style={{paddingLeft: 15}}>
+                            <TextCustomComponent textType={"bold"}>{'Mô tả chi tiêu'}</TextCustomComponent>
+                            <TextInputCustomComponent
+                                style={styles.text_input} onChangeText={(value: any) => {
+                                _onChangeForm(value, 'description')
+                            }} value={form.description}/>
+                        </View>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10}}>
+                            <TouchOpacityButton style={styles.button2} onPress={_onDelete}>
+                                <TextCustomComponent color={'white'}
+                                                     textType={"bold"}>{'Xoá dữ liệu gần nhất'}</TextCustomComponent>
+                            </TouchOpacityButton>
+                            <TouchOpacityButton style={styles.button3} onPress={_onSubmit} data={false}>
+                                <TextCustomComponent color={'white'} textType={"bold"}>{'Chi'}</TextCustomComponent>
+                            </TouchOpacityButton>
+                            <TouchOpacityButton style={styles.button} onPress={_onSubmit} data={true}>
+                                <TextCustomComponent color={'white'} textType={"bold"}>{'Thu'}</TextCustomComponent>
+                            </TouchOpacityButton>
+                        </View>
+                    </ScrollView>
                 </View>
-                <View style={{paddingLeft: 15}}>
-                    <TextCustomComponent textType={"bold"}>{'Mô tả chi tiêu'}</TextCustomComponent>
-                    <TextInputCustomComponent
-                        style={styles.text_input} onChangeText={(value: any) => {
-                        _onChangeForm(value, 'description')
-                    }} value={form.description}/>
+                <TextCustomComponent style={{paddingLeft: 15}}>
+                    <TextCustomComponent>{`Số tiền đã tiêu trong ngày `}</TextCustomComponent>
+                    <TextCustomComponent textType={'bold'}
+                                         fontSize={20}>{sumDate(data) + ''}</TextCustomComponent>
+                    <TextCustomComponent>{` vnd`}</TextCustomComponent>
+                </TextCustomComponent>
+                <View style={{flexDirection: 'row', marginTop: 15}}>
+                    <View style={styles.container1}>
+                        <TextCustomComponent textType={"bold"}>{`Số tiền`}</TextCustomComponent>
+                    </View>
+                    <View style={styles.container1}>
+                        <TextCustomComponent textType={"bold"}>{`Mô tả`}</TextCustomComponent>
+                    </View>
                 </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10}}>
-                    <TouchOpacityButton style={styles.button2} onPress={_onDelete}>
-                        <TextCustomComponent color={'white'}
-                                             textType={"bold"}>{'Xoá dữ liệu gần nhất'}</TextCustomComponent>
-                    </TouchOpacityButton>
-                    <TouchOpacityButton style={styles.button3} onPress={_onSubmit} data={false}>
-                        <TextCustomComponent color={'white'} textType={"bold"}>{'Chi'}</TextCustomComponent>
-                    </TouchOpacityButton>
-                    <TouchOpacityButton style={styles.button} onPress={_onSubmit} data={true}>
-                        <TextCustomComponent color={'white'} textType={"bold"}>{'Thu'}</TextCustomComponent>
-                    </TouchOpacityButton>
+                <View style={{height: _const.HEIGHT_SCREEN * 0.33}}>
+                    <FlatList refreshControl={
+                        <RefreshControl
+                            refreshing={refresh}
+                            onRefresh={_onRefresh}
+                        />
+                    } data={data} renderItem={renderTable}
+                    />
                 </View>
-            </ScrollView>
-        </View>
-        <TextCustomComponent style={{paddingLeft: 15}}>
-            <TextCustomComponent>{`Số tiền đã tiêu trong ngày `}</TextCustomComponent>
-            <TextCustomComponent textType={'bold'}
-                                 fontSize={20}>{sumDate(data) + ''}</TextCustomComponent>
-            <TextCustomComponent>{` vnd`}</TextCustomComponent>
-        </TextCustomComponent>
-        <View style={{flexDirection: 'row', marginTop: 15}}>
-            <View style={styles.container1}>
-                <TextCustomComponent textType={"bold"}>{`Số tiền`}</TextCustomComponent>
             </View>
-            <View style={styles.container1}>
-                <TextCustomComponent textType={"bold"}>{`Mô tả`}</TextCustomComponent>
-            </View>
         </View>
-        <View style={{height: _const.HEIGHT_SCREEN * 0.4}}>
-            <FlatList refreshControl={
-                <RefreshControl
-                    refreshing={refresh}
-                    onRefresh={_onRefresh}
-                />
-            } data={data} renderItem={renderTable}
-            />
-        </View>
-    </SafeAreaView>
+    </View>
 })
 
 const styles = StyleSheet.create({
+    container2: {
+        position: 'absolute',
+        top: 0,
+        left: 'auto',
+        width: _const.WIDTH_SCREEN,
+        height: _const.HEIGHT_SCREEN * 0.4, backgroundColor: COLOR_GREEN,
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30
+    },
     container1: {
-        width: _const.WIDTH_SCREEN * 0.5,
-        height: _const.HEIGHT_SCREEN * 0.08,
+        width: _const.WIDTH_SCREEN * 0.475,
+        height: _const.HEIGHT_SCREEN * 0.06,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
         borderColor: COLOR_PAPER
     },
     box1: {
-        width: _const.WIDTH_SCREEN * 0.5,
-        height: _const.HEIGHT_SCREEN * 0.08,
+        width: _const.WIDTH_SCREEN * 0.475,
+        height: _const.HEIGHT_SCREEN * 0.07,
         alignItems: 'center',
         justifyContent: 'center',
         borderColor: COLOR_PAPER,
@@ -194,8 +218,8 @@ const styles = StyleSheet.create({
         backgroundColor: hexAToRGBA(COLOR_GREEN, true)
     },
     box2: {
-        width: _const.WIDTH_SCREEN * 0.5,
-        height: _const.HEIGHT_SCREEN * 0.08,
+        width: _const.WIDTH_SCREEN * 0.475,
+        height: _const.HEIGHT_SCREEN * 0.07,
         alignItems: 'center',
         justifyContent: 'center',
         borderColor: COLOR_PAPER,
@@ -203,7 +227,7 @@ const styles = StyleSheet.create({
         backgroundColor: hexAToRGBA(COLOR_RED, true)
     },
     button3: {
-        width: _const.WIDTH_SCREEN * 0.2,
+        width: _const.WIDTH_SCREEN * 0.15,
         height: _const.HEIGHT_SCREEN * 0.05,
         paddingHorizontal: 10,
         backgroundColor: COLOR_RED,
@@ -238,7 +262,7 @@ const styles = StyleSheet.create({
     },
     container: {backgroundColor: 'white', flex: 1},
     text_input: {
-        width: _const.WIDTH_SCREEN * 0.9,
+        width: _const.WIDTH_SCREEN * 0.85,
         height: _const.HEIGHT_SCREEN * 0.05,
         borderWidth: 2,
         borderColor: COLOR_PAPER,

@@ -94,10 +94,21 @@ export const LAYOUT = StyleSheet.create({
 
 export const FONT = StyleSheet.create({
     normal: {
+        fontFamily: 'Nunito-SemiBold',
         fontWeight: "600",
         fontStyle: 'normal',
         textTransform: 'none',
     },
+    bold: {
+        fontFamily: 'Nunito-Bold',
+        fontWeight: "bold",
+        fontStyle: 'normal',
+    },
+    light: {
+        fontFamily: 'Nunito-Medium',
+        fontWeight: "300",
+        fontStyle: 'normal',
+    }
 });
 
 

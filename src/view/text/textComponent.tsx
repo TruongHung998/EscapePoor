@@ -1,5 +1,6 @@
 import React, {memo} from "react";
 import {PixelRatio, StyleProp, Text, TextProps, TextStyle} from "react-native";
+import {FONT, LAYOUT} from "@constants/globalStyles";
 
 interface TextComponentProps {
     children?: Element | string,
@@ -53,12 +54,20 @@ const TextCustomComponent = memo(({
 })
 
 const styles = {
-    regular: {},
-    bold: {
-        fontWeight: 'bold',
+    regular: {
+        ...FONT.normal
     },
-    light: {},
-    extra_light: {},
-    italic: {}
+    bold: {
+        ...FONT.bold
+    },
+    light: {
+        ...FONT.light
+    },
+    extra_light: {
+        ...FONT.normal
+    },
+    italic: {
+        ...FONT.normal
+    }
 }
 export default TextCustomComponent

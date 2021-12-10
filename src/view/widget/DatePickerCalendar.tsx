@@ -152,9 +152,10 @@ const addK = (string: string) => {
         const prefix = string[0] === "-" ? "-" : "+"
         if (split !== '0') {
             const num = parseInt(removeNumberWithCommas(split))
+            console.log(num)
             if (num >= 1000) {
-                return prefix + numberWithCommas(num / 10000) + 'k'
+                return prefix + numberWithCommas(num / 1000) + 'k'
             } else return prefix + num
-        } else return "0đ"
+        } else return ""
     } else return "0đ"
 }
