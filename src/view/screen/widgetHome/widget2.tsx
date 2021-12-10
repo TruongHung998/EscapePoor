@@ -13,7 +13,7 @@ export const Widget2 = memo(({data}: any) => {
     return <View style={styles.view1}>
         <View style={styles.view2}>
             <TextCustomComponent textType={'bold'} fontSize={25}
-                                 color={'white'}>{'Anh yêu Lan Huyền Lắm'}</TextCustomComponent>
+                                 color={'white'}>{'Tiền là giấy'}</TextCustomComponent>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
             <Image source={require("../../../assets/images/pig.png")} style={styles.image}/>

@@ -84,7 +84,7 @@ const HomePage = memo(() => {
                 <View>
                     <View style={styles.container2}/>
                     <View style={styles.container3}>
-                        <Image source={require("../../assets/lanhuyen.jpg")} style={styles.image}/>
+                        <Image source={require("../../assets/avatarHung.jpg")} style={styles.image}/>
                     </View>
                     <View style={styles.view1}>
                         <View style={{marginTop: _const.HEIGHT_SCREEN * 0.12}}>
